@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 
 const App = () => {
   const [users, setUsers] = useState([]);
-  const [formData, setFormData] = useState({ id: null, name: "", email: "" });
+  const [formData, setFormData] = useState({
+    id: null,
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -12,10 +17,18 @@ const App = () => {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch(`https://jsonplaceholder.typicode.com/users`);
+      const response = await fetch(
+        `https://jsonplaceholder.typicode.com/users`
+      );
       if (!response.ok) throw new Error(`Failed to fetch users: ${response.status}`);
       const data = await response.json();
-      setUsers(data);
+      const modifiedData = data.map((user) => ({
+        id: user.id,
+        firstName: user.name.split(" ")[0] || "",
+        lastName: user.name.split(" ")[1] || "",
+        email: user.email,
+      }));
+      setUsers(modifiedData);
     } catch (err) {
       setError(err.message || "Something went wrong.");
     } finally {
@@ -39,13 +52,15 @@ const App = () => {
     e.preventDefault();
     setError("");
 
-    if (!formData.name || !formData.email) {
-      setError("Name and email are required.");
+    const { firstName, lastName, email } = formData;
+
+    if (!firstName || !lastName || !email) {
+      setError("First name, last name, and email are required.");
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
+    if (!emailRegex.test(email)) {
       setError("Please enter a valid email address.");
       return;
     }
@@ -58,15 +73,18 @@ const App = () => {
       );
       setIsEditing(false);
     } else {
+      const newId =
+        users.length > 0 ? Math.max(...users.map((user) => user.id)) + 1 : 1;
       const newUser = {
-        id: Math.random().toString(36).substr(2, 9),
-        name: formData.name,
-        email: formData.email,
+        id: newId,
+        firstName,
+        lastName,
+        email,
       };
       setUsers((prevUsers) => [newUser, ...prevUsers]);
     }
 
-    setFormData({ id: null, name: "", email: "" });
+    setFormData({ id: null, firstName: "", lastName: "", email: "" });
   };
 
   // Handle edit button click
@@ -90,9 +108,17 @@ const App = () => {
         {error && <p style={styles.error}>{error}</p>}
         <input
           type="text"
-          name="name"
-          placeholder="Name"
-          value={formData.name}
+          name="firstName"
+          placeholder="First Name"
+          value={formData.firstName}
+          onChange={handleInputChange}
+          style={styles.input}
+        />
+        <input
+          type="text"
+          name="lastName"
+          placeholder="Last Name"
+          value={formData.lastName}
           onChange={handleInputChange}
           style={styles.input}
         />
@@ -136,8 +162,11 @@ const App = () => {
 // Reusable Employee Card Component
 const EmployeeCard = ({ user, onEdit, onDelete }) => (
   <div style={styles.card}>
-    <h3>{user.name}</h3>
-    <p>{user.email}</p>
+    <h3>
+      {user.firstName} {user.lastName}
+    </h3>
+    <p>ID: {user.id}</p>
+    <p>Email: {user.email}</p>
     <div style={styles.actions}>
       <button style={styles.editButton} onClick={() => onEdit(user)}>
         Edit
