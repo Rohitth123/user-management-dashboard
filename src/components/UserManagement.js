@@ -100,11 +100,11 @@ const App = () => {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>Employee Management</h1>
+      <h1 style={styles.heading}>User  Management</h1>
 
       {/* Create/Update User Form */}
       <form style={styles.form} onSubmit={handleSubmit}>
-        <h2>{isEditing ? "Edit Employee" : "Create New Employee"}</h2>
+        <h2>{isEditing ? "Edit User" : "Create New User"}</h2>
         {error && <p style={styles.error}>{error}</p>}
         <input
           type="text"
@@ -131,17 +131,17 @@ const App = () => {
           style={styles.input}
         />
         <button type="submit" style={styles.button}>
-          {isEditing ? "Update Employee" : "Add Employee"}
+          {isEditing ? "Update User" : "Add User"}
         </button>
       </form>
 
-      {/* Employee List */}
-      <div style={styles.employeeList}>
-        <h2>All Employees</h2>
+      {/* User List */}
+      <div style={styles.UserList}>
+        <h2>All Users</h2>
         {loading ? (
-          <p>Loading employees...</p>
+          <p>Loading Users...</p>
         ) : users.length === 0 ? (
-          <p>No employees found.</p>
+          <p>No Users found.</p>
         ) : (
           <div style={styles.grid}>
             {users.map((user) => (
@@ -159,7 +159,7 @@ const App = () => {
   );
 };
 
-// Reusable Employee Card Component
+// Reusable User Card Component
 const EmployeeCard = ({ user, onEdit, onDelete }) => (
   <div style={styles.card}>
     <h3>
@@ -220,7 +220,7 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
   },
-  employeeList: {
+  UserList: {
     marginTop: "20px",
   },
   grid: {
